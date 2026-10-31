@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>درس الشروط والشرط المتداخل Nested if و elif</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Fira+Code:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti for celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            pink: {
+              50: '#fff1f5',
+              100: '#ffe4ec',
+              200: '#fecddb',
+              300: '#fea3bd',
+              400: '#fb7198',
+              500: '#f43f75',
+              600: '#e11d5f',
+              700: '#be124e',
+              800: '#9f1239',
+              900: '#881337',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #fff5f8;
+      background-image: radial-gradient(#fecddb 1px, transparent 1px), radial-gradient(#ffe4ec 1px, #fff5f8 1px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+      line-height: 1.8;
+    }
+    .custom-shadow {
+      box-shadow: 0 10px 30px -5px rgba(244, 63, 117, 0.12), 0 4px 6px -2px rgba(244, 63, 117, 0.05);
+    }
+    /* Flowchart Geometry */
+    .flow-oval {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      border: 3px solid #16a34a;
+      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
+    }
+    .flow-parallelogram {
+      transform: skew(-18deg);
+      background: linear-gradient(135deg, #fff1f5 0%, #fce7f3 100%);
+      border: 3px solid #e11d5f;
+      box-shadow: 0 4px 12px rgba(225, 29, 95, 0.15);
+    }
+    .flow-parallelogram > div {
+      transform: skew(18deg);
+    }
+    .flow-rhombus-wrap {
+      width: 250px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .flow-rhombus-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+    }
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      border-top: 18px solid transparent;
+      border-bottom: 18px solid transparent;
+      border-right: 36px solid #be124e;
+      filter: drop-shadow(-3px 2px 5px rgba(0,0,0,0.3));
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased pb-16">
+
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-pink-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Signature & Main Lesson Headline -->
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-600 to-rose-400 text-white flex items-center justify-center font-black text-3xl shadow-md">
+          🌸
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-pink-100 text-pink-800 rounded-xl text-sm font-black mb-1 border border-pink-200">
+            <span>✨ إعداد و تصميم: أ. وفاء عليان</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-black text-pink-900 leading-tight">درس الشروط والشرط المتداخل (Nested if) و elif</h1>
+        </div>
+      </div>
+
+      <!-- Quick Navigation links -->
+      <div class="flex items-center gap-2">
+        <nav class="hidden lg:flex items-center gap-2 text-base font-bold">
+          <a href="#stats-section" class="px-3.5 py-2 rounded-xl bg-pink-50 text-pink-800 hover:bg-pink-100 border border-pink-200 transition">بيانات الحصة</a>
+          <a href="#wheel-section" class="px-3.5 py-2 rounded-xl bg-pink-600 text-white hover:bg-pink-700 transition shadow-sm">عجلة الحظ 🎡</a>
+          <a href="#intro-section" class="px-3.5 py-2 rounded-xl bg-pink-50 text-pink-800 hover:bg-pink-100 border border-pink-200 transition">الشروط و elif</a>
+          <a href="#warmup-section" class="px-3.5 py-2 rounded-xl bg-pink-50 text-pink-800 hover:bg-pink-100 border border-pink-200 transition">النشاط التمهيدي</a>
+          <a href="#nested-section" class="px-4 py-2 rounded-xl bg-pink-700 text-white hover:bg-pink-800 transition shadow-md">الشرط المتداخل 🔐</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 mt-8 space-y-10">
+
+    <!-- SECTION 1: Automatic Date, Class & Attendance -->
+    <section id="stats-section" class="bg-white rounded-3xl p-6 md:p-8 border-2 border-pink-300 custom-shadow">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b-2 border-pink-100 pb-5 mb-6">
+        <div class="flex items-center gap-4">
+          <span class="p-3.5 bg-pink-100 text-pink-600 rounded-2xl">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </span>
+          <div>
+            <span class="text-sm font-black text-pink-500 uppercase tracking-wide">التقويم واليوم الدراسي (تلقائي)</span>
+            <div id="current-day-date" class="text-2xl md:text-3xl font-black text-slate-800">جاري تحميل التاريخ...</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 bg-pink-50 px-5 py-3 rounded-2xl border-2 border-pink-200">
+          <span class="text-pink-800 text-xl font-black">🏫 الصف:</span>
+          <input type="text" id="class-name-input" value="العاشر / 1" class="text-2xl font-black text-pink-700 bg-transparent outline-none w-36 text-center border-b-2 border-pink-400 focus:border-pink-600 pb-1">
+        </div>
+      </div>
+
+      <!-- Live Attendance Tracker Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-5 text-center">
+        <div class="bg-pink-50/70 p-5 rounded-2xl border-2 border-pink-200">
+          <label class="block text-base font-bold text-pink-900 mb-2">إجمالي عدد الطالبات</label>
+          <input type="number" id="total-students" value="25" min="1" class="w-full text-center text-3xl font-black text-pink-700 bg-white rounded-2xl py-2 border-2 border-pink-300 focus:ring-2 focus:ring-pink-400 outline-none">
+        </div>
+
+        <div class="bg-emerald-50/70 p-5 rounded-2xl border-2 border-emerald-200">
+          <label class="block text-base font-bold text-emerald-900 mb-2">عدد الحاضرات ✅</label>
+          <input type="number" id="present-students" value="24" min="0" class="w-full text-center text-3xl font-black text-emerald-700 bg-white rounded-2xl py-2 border-2 border-emerald-300 focus:ring-2 focus:ring-emerald-400 outline-none">
+        </div>
+
+        <div class="bg-rose-50/70 p-5 rounded-2xl border-2 border-rose-200">
+          <label class="block text-base font-bold text-rose-900 mb-2">عدد الغائبات ❌</label>
+          <div id="absent-students" class="text-3xl font-black text-rose-600 py-2">1</div>
+        </div>
+
+        <div class="bg-purple-50/70 p-5 rounded-2xl border-2 border-purple-200">
+          <label class="block text-base font-bold text-purple-900 mb-2">نسبة الحضور</label>
+          <div id="attendance-rate" class="text-3xl font-black text-purple-700 py-2">96%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Smart Spinning Wheel for Girls -->
+    <section id="wheel-section" class="bg-gradient-to-b from-white to-pink-50/70 rounded-3xl p-6 md:p-10 border-2 border-pink-300 custom-shadow">
+      <div class="text-center max-w-3xl mx-auto mb-8">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-pink-100 text-pink-800 text-sm font-black rounded-full mb-2">
+          🌸 استراتيجية السحب العشوائي للمشاركات
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-pink-900">عجلة الحظ الذكية للطالبات 🎡</h2>
+        <p class="text-base md:text-lg font-bold text-pink-700 mt-2">اضغطي زر التدوير لاختيار مبدعة الحاسوب التي ستجيب على التحدي القادم!</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Canvas & Pointer -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-center relative">
+          <div class="relative w-[340px] h-[340px] sm:w-[420px] sm:h-[420px] flex items-center justify-center">
+            <!-- Triangular Pointer on the Right -->
+            <div class="wheel-pointer absolute -right-3 sm:-right-4 z-20"></div>
+            <!-- Canvas -->
+            <canvas id="wheel-canvas" width="420" height="420" class="w-full h-full drop-shadow-xl rounded-full"></canvas>
+            <!-- Center Hub -->
+            <button id="spin-btn" class="absolute z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-pink-600 to-rose-500 text-white font-black text-xl shadow-xl border-4 border-white flex items-center justify-center hover:scale-105 active:scale-95 transition transform">
+              تدوير! ✨
+            </button>
+          </div>
+        </div>
+
+        <!-- Student Names Manager & Lucky Winner Panel -->
+        <div class="lg:col-span-5 space-y-5">
+          <!-- Winner Box -->
+          <div id="winner-banner" class="hidden bg-gradient-to-r from-pink-600 to-rose-500 text-white p-6 rounded-3xl text-center shadow-xl transform transition">
+            <span class="text-sm uppercase font-black tracking-wider opacity-90">الطالبة المتميزة هي:</span>
+            <div id="winner-name" class="text-3xl md:text-4xl font-black mt-2">سارة الكندري 🎉</div>
+            <p class="text-base mt-2 text-pink-100 font-bold">استعدي للإجابة على التحدي الصفي!</p>
+          </div>
+
+          <!-- Students List Box -->
+          <div class="bg-white rounded-3xl p-5 border-2 border-pink-200">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-lg font-black text-pink-900">قائمة طالبات الصف (اسم في كل سطر):</label>
+              <button id="reset-names-btn" class="text-sm text-pink-600 hover:text-pink-800 underline font-bold">الأسماء الافتراضية</button>
+            </div>
+            <textarea id="students-input" rows="5" class="w-full text-base font-bold p-3 border-2 border-pink-200 rounded-2xl focus:ring-2 focus:ring-pink-300 outline-none bg-pink-50/40 text-slate-800 leading-relaxed"></textarea>
+            <button id="update-wheel-btn" class="w-full mt-3 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl text-base transition shadow-sm">
+              🔄 تحديث أسماء العجلة
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Intro & Previous Concepts (Comparison Operators & elif) -->
+    <section id="intro-section" class="bg-white rounded-3xl p-6 md:p-10 border-2 border-pink-300 custom-shadow space-y-8">
+      <div class="border-b-2 border-pink-100 pb-5">
+        <span class="px-4 py-1.5 bg-pink-100 text-pink-800 text-base font-black rounded-full">استرجاع الخبرات السابقة</span>
+        <h2 class="text-3xl md:text-4xl font-black text-pink-900 mt-3">مقدمة: الشروط في لغة بايثون وبنية elif 💡</h2>
+        <p class="text-pink-700 text-lg font-bold mt-2">تُستخدم التعليمات الشرطية (<span class="font-mono text-pink-800">if - elif - else</span>) لاتخاذ القرارات وتنفيذ تعليمات معينة فقط عند تحقق شروط محددة.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Pillar 1: Comparison Operators -->
+        <div class="bg-pink-50/70 rounded-3xl p-6 border-2 border-pink-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-pink-600 text-white flex items-center justify-center text-2xl font-black">1</span>
+              <h3 class="text-2xl font-black text-pink-900">معاملات المقارنة (Comparison Operators)</h3>
+            </div>
+            <p class="text-base text-slate-700 font-bold mb-4 leading-relaxed">
+              تُقارن بين قيمتين وتعطي نتيجة منطقية إما <span class="font-mono text-emerald-700 font-black">True</span> (صحيح) أو <span class="font-mono text-rose-700 font-black">False</span> (خطأ):
+            </p>
+            
+            <div class="grid grid-cols-2 gap-3 font-mono text-base">
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">==</span>
+                <span class="font-cairo text-base font-bold text-slate-700">يساوي تماماً</span>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">!=</span>
+                <span class="font-cairo text-base font-bold text-slate-700">لا يساوي</span>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">&gt;</span>
+                <span class="font-cairo text-base font-bold text-slate-700">أكبر من</span>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">&lt;</span>
+                <span class="font-cairo text-base font-bold text-slate-700">أصغر من</span>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">&gt;=</span>
+                <span class="font-cairo text-base font-bold text-slate-700">أكبر أو يساوي</span>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-pink-200 flex items-center justify-between">
+                <span class="text-pink-700 font-black text-xl">&lt;=</span>
+                <span class="font-cairo text-base font-bold text-slate-700">أصغر أو يساوي</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 p-3.5 bg-pink-100/90 rounded-2xl text-center font-mono text-base font-black text-pink-900 border border-pink-200">
+            score = 90 ➔ (score &gt;= 90) يُرجع True
+          </div>
+        </div>
+
+        <!-- Pillar 2: elif and Multiple Conditions -->
+        <div class="bg-pink-50/70 rounded-3xl p-6 border-2 border-pink-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-pink-600 text-white flex items-center justify-center text-2xl font-black">2</span>
+              <h3 class="text-2xl font-black text-pink-900">التعليمة الشرطية elif (اختصار else if)</h3>
+            </div>
+            <p class="text-base text-slate-700 font-bold mb-4 leading-relaxed">
+              تُستخدم لإضافة شروط بديلة متعددة ومتسلسلة في حال عدم تحقق الشرط الأول (مثل فحص تقديرات درجات الطالبات):
+            </p>
+
+            <div dir="ltr" class="text-left bg-slate-900 rounded-2xl p-4 text-white font-mono text-base leading-relaxed border-2 border-pink-300">
+              <div class="text-slate-400 text-xs font-cairo mb-1 text-left"># مثال تقديرات الدرجات:</div>
+              <div><span class="text-pink-400 font-bold">if</span> student_score &gt;= <span class="text-yellow-300">90</span>:</div>
+              <div class="pl-6 text-emerald-400">print(<span class="text-emerald-300">'Excellent grade !'</span>)</div>
+              <div><span class="text-pink-400 font-bold">elif</span> student_score &gt;= <span class="text-yellow-300">70</span>:</div>
+              <div class="pl-6 text-emerald-400">print(<span class="text-emerald-300">'Good grade !'</span>)</div>
+              <div><span class="text-pink-400 font-bold">elif</span> student_score &gt;= <span class="text-yellow-300">50</span>:</div>
+              <div class="pl-6 text-emerald-400">print(<span class="text-emerald-300">'Acceptable grade !'</span>)</div>
+              <div><span class="text-pink-400 font-bold">else</span>:</div>
+              <div class="pl-6 text-rose-400">print(<span class="text-rose-300">'You have failed !'</span>)</div>
+            </div>
+          </div>
+
+          <div class="mt-5 p-3.5 bg-pink-100/90 rounded-2xl text-center font-bold text-pink-900 text-base border border-pink-200">
+            📌 يتم فحص شروط elif بالتسلسل ويتوقف الفحص فور تحقق أول شرط صحيح.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: Warmup Fill-in-the-blanks Activity -->
+    <section id="warmup-section" class="bg-white rounded-3xl p-6 md:p-10 border-2 border-pink-400 custom-shadow">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b-2 border-pink-100 pb-5 mb-6">
+        <div>
+          <span class="px-4 py-1.5 bg-rose-100 text-rose-800 text-base font-black rounded-full">النشاط التمهيدي الصفي</span>
+          <h2 class="text-2xl md:text-3xl font-black text-pink-900 mt-2">نشاط تمهيدي: أكملي الكود البرمجي التالي ✏️</h2>
+          <p class="text-base text-pink-700 font-bold mt-1">المطلوب: استقبال عدد صحيح من المستخدم وطباعة "Positive number" إذا كان أكبر من الصفر وإلا طباعة "Negative number".</p>
+        </div>
+        <div class="bg-pink-100 text-pink-800 font-black px-5 py-2.5 rounded-2xl text-base flex items-center gap-2">
+          <span>⏱️ وقت النشاط:</span>
+          <span>5 دقائق</span>
+        </div>
+      </div>
+
+      <!-- Large interactive code box with fillable inputs (LTR) -->
+      <div dir="ltr" class="text-left bg-slate-900 rounded-3xl p-6 md:p-8 text-white font-mono text-lg md:text-xl border-2 border-pink-400 shadow-inner leading-loose">
+        <div class="text-slate-400 text-xs sm:text-sm mb-4 font-cairo text-left"># اكتبِ التعليمات المناسبة داخل الفراغات (من اليسار لليمين LTR):</div>
+        
+        <!-- Line 1: Input -->
+        <div class="flex items-center flex-wrap gap-2.5 mb-4">
+          <span class="text-slate-500 select-none">1</span>
+          <span class="text-sky-400">num</span>
+          <span class="text-slate-300">=</span>
+          <input type="text" id="blank1" placeholder="???" dir="ltr" class="w-24 bg-slate-800 text-center text-yellow-300 font-black border-2 border-dashed border-pink-400 rounded-xl px-2 py-1 outline-none focus:border-yellow-400">
+          <span class="text-slate-300">(input(</span>
+          <span class="text-emerald-300">'Enter number: '</span>
+          <span class="text-slate-300">))</span>
+        </div>
+
+        <!-- Line 2: If condition -->
+        <div class="flex items-center flex-wrap gap-2.5 mb-4">
+          <span class="text-slate-500 select-none">2</span>
+          <input type="text" id="blank2" placeholder="???" dir="ltr" class="w-20 bg-slate-800 text-center text-pink-400 font-black border-2 border-dashed border-pink-400 rounded-xl px-2 py-1 outline-none focus:border-pink-300">
+          <span class="text-sky-400">num</span>
+          <input type="text" id="blank3" placeholder="???" dir="ltr" class="w-16 bg-slate-800 text-center text-purple-300 font-black border-2 border-dashed border-pink-400 rounded-xl px-2 py-1 outline-none focus:border-purple-300">
+          <span class="text-yellow-300">0</span>
+          <span class="text-pink-400 font-black">:</span>
+        </div>
+
+        <!-- Line 3: Print block -->
+        <div class="flex items-center flex-wrap gap-2.5 mb-4 pl-8">
+          <span class="text-slate-500 select-none">3</span>
+          <span class="text-yellow-300">print</span>
+          <span class="text-slate-300">(</span>
+          <span class="text-emerald-300">'Positive number'</span>
+          <span class="text-slate-300">)</span>
+        </div>
+
+        <!-- Line 4: Else -->
+        <div class="flex items-center flex-wrap gap-2.5 mb-4">
+          <span class="text-slate-500 select-none">4</span>
+          <input type="text" id="blank4" placeholder="???" dir="ltr" class="w-24 bg-slate-800 text-center text-pink-400 font-black border-2 border-dashed border-pink-400 rounded-xl px-2 py-1 outline-none focus:border-pink-300">
+          <span class="text-pink-400 font-black">:</span>
+        </div>
+
+        <!-- Line 5: Else print -->
+        <div class="flex items-center flex-wrap gap-2.5 pl-8">
+          <span class="text-slate-500 select-none">5</span>
+          <span class="text-yellow-300">print</span>
+          <span class="text-slate-300">(</span>
+          <span class="text-emerald-300">'Negative number'</span>
+          <span class="text-slate-300">)</span>
+        </div>
+      </div>
+
+      <!-- Action buttons & Feedbacks -->
+      <div class="mt-6 flex flex-wrap items-center gap-4">
+        <button id="check-blanks-btn" class="px-7 py-3 bg-pink-600 hover:bg-pink-700 text-white font-black rounded-2xl shadow-md transition text-lg flex items-center gap-2">
+          <span>تحقق من الإجابة ✅</span>
+        </button>
+        <button id="show-blanks-hint-btn" class="px-5 py-3 bg-pink-100 hover:bg-pink-200 text-pink-800 font-black rounded-2xl transition text-base">
+          💡 إظهار تلميح
+        </button>
+        <button id="auto-fill-btn" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black rounded-2xl text-base transition mr-auto">
+          عرض الحل النموذجي
+        </button>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div id="blanks-result" class="hidden mt-5 p-5 rounded-2xl text-lg font-black leading-relaxed"></div>
+    </section>
+
+    <!-- SECTION 5: Nested if Statement, Standard Flowchart & Live Code Simulator -->
+    <section id="nested-section" class="bg-white rounded-3xl p-6 md:p-10 border-2 border-pink-400 custom-shadow space-y-10">
+      
+      <!-- Lesson Headline -->
+      <div class="border-b-2 border-pink-100 pb-6">
+        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-pink-100 text-pink-800 text-base font-black mb-3">
+          🌟 موضوع الدرس الأساسي
+        </div>
+        <h2 class="text-3xl md:text-5xl font-black text-pink-900 leading-tight">الشرط المتداخل (Nested if Statement) 🔐</h2>
+        <p class="text-lg md:text-xl text-pink-700 mt-3 font-bold leading-relaxed">
+          تعليمة شرطية تحتوي على تعليمة شرطية أخرى داخلها، وتُستخدم لفحص أكثر من شرط داخل البرنامج قبل اتخاذ القرار النهائي.
+        </p>
+      </div>
+
+      <!-- Top: Code First -->
+      <div class="space-y-6">
+        <!-- Code Card (Top) -->
+        <div class="bg-pink-50/60 p-6 md:p-8 rounded-3xl border-2 border-pink-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-2xl font-black text-pink-900 flex items-center gap-2">
+              <span>💻 الكود البرمجي (Python Code):</span>
+            </h3>
+            <span class="text-xs font-black bg-pink-200 text-pink-800 px-3 py-1 rounded-full">كل تعليمة بسطر مستقل</span>
+          </div>
+          
+          <div dir="ltr" class="text-left bg-slate-900 rounded-3xl p-6 text-white font-mono text-base md:text-lg border-2 border-pink-300 leading-loose shadow-md">
+            <div class="text-slate-400 text-xs font-cairo mb-2 text-left"># مثال 6: التحقق من اسم المستخدم ثم كلمة المرور:</div>
+            <div><span class="text-sky-400">user_name</span> = input(<span class="text-emerald-300">'Enter user name: '</span>)</div>
+            <div><span class="text-sky-400">user_password</span> = input(<span class="text-emerald-300">'Enter password: '</span>)</div>
+            <div class="text-pink-400 font-bold">if user_name == 'admin':</div>
+            <div class="pl-8 text-purple-300 font-bold">if user_password == '123@q8':</div>
+            <div class="pl-16 text-emerald-400">print('Login successful. Welcome admin!')</div>
+            <div class="pl-8 text-purple-300 font-bold">else:</div>
+            <div class="pl-16 text-rose-400">print('Incorrect password.')</div>
+            <div class="text-pink-400 font-bold">else:</div>
+            <div class="pl-8 text-rose-400">print('User name not found.')</div>
+          </div>
+        </div>
+
+        <!-- Algorithm & Flowchart Grid Below Code -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Algorithm Card (Directly Below the Code) -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100/70 p-6 md:p-8 rounded-3xl border-2 border-pink-300 shadow-sm space-y-4">
+            <div class="flex items-center gap-3 border-b-2 border-pink-200 pb-3">
+              <span class="w-10 h-10 rounded-2xl bg-pink-600 text-white flex items-center justify-center font-black text-xl">📋</span>
+              <h3 class="text-2xl font-black text-pink-900">الخوارزمية (Algorithm):</h3>
+            </div>
+            
+            <p class="text-sm font-bold text-pink-800 leading-relaxed">
+              خطوات الحل المنطقية المتسلسلة والمطابقة تماماً لبنية الكود البرمجي:
+            </p>
+            
+            <ol class="space-y-3 font-bold text-slate-800 text-base">
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">1.</span>
+                <span><b>البداية (Start)</b>.</span>
+              </li>
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">2.</span>
+                <span>استقبال اسم المستخدم <code class="font-mono text-pink-700 bg-pink-50 px-1 rounded">user_name</code> من المستخدم.</span>
+              </li>
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">3.</span>
+                <span>استقبال كلمة المرور <code class="font-mono text-pink-700 bg-pink-50 px-1 rounded">user_password</code> من المستخدم.</span>
+              </li>
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">4.</span>
+                <span>اختبار الشرط الخارجي: هل <code class="font-mono text-pink-700 bg-pink-50 px-1 rounded">user_name == 'admin'</code>؟</span>
+              </li>
+              <li class="mr-4 bg-pink-100/80 p-3 rounded-2xl border border-pink-300 text-sm space-y-2">
+                <div class="flex items-start gap-2">
+                  <span class="text-emerald-700 font-black">• إذا نعم (True):</span>
+                  <span>اختبار الشرط المتداخل الداخلي: هل <code class="font-mono text-purple-700 bg-white px-1 rounded">user_password == '123@q8'</code>؟</span>
+                </div>
+                <div class="mr-4 space-y-1 text-xs">
+                  <div>- إذا نعم: طباعة <span class="font-mono text-emerald-800 font-black">'Login successful. Welcome admin!'</span></div>
+                  <div>- إذا لا: طباعة <span class="font-mono text-rose-800 font-black">'Incorrect password.'</span></div>
+                </div>
+              </li>
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">5.</span>
+                <span>إذا لم يتحقق الشرط الخارجي (False): طباعة <span class="font-mono text-rose-700 font-black">'User name not found.'</span></span>
+              </li>
+              <li class="flex items-start gap-2 bg-white/90 p-3 rounded-2xl border border-pink-200 shadow-xs">
+                <span class="text-pink-600 font-black">6.</span>
+                <span><b>النهاية (End)</b>.</span>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Flowchart with Continuous Connected SVG Lines -->
+          <div class="lg:col-span-7 bg-white p-4 md:p-6 rounded-3xl border-2 border-pink-300 shadow-sm flex flex-col items-center">
+            <div class="w-full text-center border-b-2 border-pink-100 pb-3 mb-3">
+              <h4 class="font-black text-pink-900 text-xl">مخطط الانسياب المتصل (Connected Flowchart)</h4>
+              <p class="text-xs text-pink-700 font-bold">معين الشروط، متوازي أضلاع الإدخال، مستطيل الطباعة، وأسهم متصلة تماماً</p>
+            </div>
+
+            <!-- Single Responsive SVG Diagram with Connected Flow Lines -->
+            <div class="w-full max-w-[560px] overflow-x-auto">
+              <svg viewBox="0 0 540 680" class="w-full h-auto drop-shadow-sm select-none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Marker definition for arrows -->
+                <defs>
+                  <marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#e11d5f" />
+                  </marker>
+                </defs>
+
+                <!-- CONNECTED FLOW LINES (Drawn behind shapes) -->
+                <!-- Start to Input1 -->
+                <line x1="200" y1="46" x2="200" y2="70" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- Input1 to Input2 -->
+                <line x1="200" y1="112" x2="200" y2="136" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- Input2 to Decision 1 -->
+                <line x1="200" y1="178" x2="200" y2="204" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- Decision 1 -> False / No (to right, down to print username error, then to bottom bus) -->
+                <path d="M 300 250 L 430 250 L 430 295" fill="none" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+                <path d="M 430 345 L 430 600 L 200 600" fill="none" stroke="#e11d5f" stroke-width="2.5" />
+
+                <!-- Decision 1 -> True / Yes (straight down to Decision 2) -->
+                <line x1="200" y1="296" x2="200" y2="340" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- Decision 2 -> True / Yes (down-left to Success Print) -->
+                <path d="M 100 385 L 85 385 L 85 450" fill="none" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- Decision 2 -> False / No (down-right to Pass Error Print) -->
+                <path d="M 300 385 L 260 385 L 260 450" fill="none" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- From Success Print to End Bus -->
+                <path d="M 85 505 L 85 570 L 200 570" fill="none" stroke="#e11d5f" stroke-width="2.5" />
+
+                <!-- From Pass Error Print to End Bus -->
+                <path d="M 260 505 L 260 570 L 200 570" fill="none" stroke="#e11d5f" stroke-width="2.5" />
+
+                <!-- Bus Line to End Oval -->
+                <line x1="200" y1="570" x2="200" y2="620" stroke="#e11d5f" stroke-width="2.5" marker-end="url(#flow-arrow)" />
+
+                <!-- SHAPES & LABELS -->
+                
+                <!-- 1. Start Oval -->
+                <g>
+                  <rect x="135" y="10" width="130" height="36" rx="18" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+                  <text x="200" y="33" text-anchor="middle" font-family="Cairo" font-size="14" font-weight="900" fill="#14532d">Start</text>
+                </g>
+
+                <!-- 2. Input user_name (Parallelogram) -->
+                <g>
+                  <polygon points="120,70 290,70 270,112 100,112" fill="#fff1f5" stroke="#e11d5f" stroke-width="2.5" />
+                  <text x="195" y="96" text-anchor="middle" font-family="Cairo, sans-serif" font-size="13" font-weight="800" fill="#881337">Enter user name</text>
+                </g>
+
+                <!-- 3. Input user_password (Parallelogram) -->
+                <g>
+                  <polygon points="120,136 290,136 270,178 100,178" fill="#fff1f5" stroke="#e11d5f" stroke-width="2.5" />
+                  <text x="195" y="162" text-anchor="middle" font-family="Cairo, sans-serif" font-size="13" font-weight="800" fill="#881337">Enter password</text>
+                </g>
+
+                <!-- 4. Decision 1: user_name == 'admin' (Rhombus) -->
+                <g>
+                  <polygon points="200,205 300,250 200,295 100,250" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" />
+                  <text x="200" y="243" text-anchor="middle" font-family="Cairo" font-size="11" font-weight="900" fill="#92400e">Is</text>
+                  <text x="200" y="262" text-anchor="middle" font-family="Fira Code, monospace" font-size="11" font-weight="800" fill="#78350f">user_name == 'admin'?</text>
+                  
+                  <!-- Labels on Decision 1 Branches -->
+                  <text x="330" y="242" font-family="Cairo" font-size="12" font-weight="900" fill="#b91c1c">No / False</text>
+                  <text x="212" y="322" font-family="Cairo" font-size="12" font-weight="900" fill="#15803d">Yes / True</text>
+                </g>
+
+                <!-- 5. Decision 1 False: Print 'User name not found.' (Rectangle) -->
+                <g>
+                  <rect x="350" y="295" width="160" height="50" rx="8" fill="#ffe4e6" stroke="#f43f5e" stroke-width="2.5" />
+                  <text x="430" y="318" text-anchor="middle" font-family="Cairo" font-size="11" font-weight="900" fill="#9f1239">print</text>
+                  <text x="430" y="334" text-anchor="middle" font-family="Fira Code, monospace" font-size="10" font-weight="800" fill="#881337">'User name not found.'</text>
+                </g>
+
+                <!-- 6. Decision 2 (Nested): user_password == '123@q8' (Rhombus) -->
+                <g>
+                  <polygon points="200,340 300,385 200,430 100,385" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" />
+                  <text x="200" y="378" text-anchor="middle" font-family="Cairo" font-size="11" font-weight="900" fill="#92400e">Is</text>
+                  <text x="200" y="397" text-anchor="middle" font-family="Fira Code, monospace" font-size="10" font-weight="800" fill="#78350f">user_password == '123@q8'?</text>
+
+                  <!-- Labels on Decision 2 Branches -->
+                  <text x="40" y="380" font-family="Cairo" font-size="11" font-weight="900" fill="#15803d">Yes / True</text>
+                  <text x="268" y="380" font-family="Cairo" font-size="11" font-weight="900" fill="#b91c1c">No / False</text>
+                </g>
+
+                <!-- 7. Decision 2 True: Print Success (Rectangle) -->
+                <g>
+                  <rect x="10" y="450" width="150" height="55" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+                  <text x="85" y="473" text-anchor="middle" font-family="Cairo" font-size="10" font-weight="900" fill="#14532d">print</text>
+                  <text x="85" y="490" text-anchor="middle" font-family="Fira Code, monospace" font-size="9" font-weight="800" fill="#14532d">'Login successful.</text>
+                  <text x="85" y="500" text-anchor="middle" font-family="Fira Code, monospace" font-size="9" font-weight="800" fill="#14532d">Welcome admin!'</text>
+                </g>
+
+                <!-- 8. Decision 2 False: Print Wrong Password (Rectangle) -->
+                <g>
+                  <rect x="185" y="450" width="150" height="55" rx="8" fill="#ffe4e6" stroke="#f43f5e" stroke-width="2.5" />
+                  <text x="260" y="475" text-anchor="middle" font-family="Cairo" font-size="10" font-weight="900" fill="#9f1239">print</text>
+                  <text x="260" y="493" text-anchor="middle" font-family="Fira Code, monospace" font-size="9" font-weight="800" fill="#881337">'Incorrect password.'</text>
+                </g>
+
+                <!-- 9. End Oval -->
+                <g>
+                  <rect x="135" y="622" width="130" height="36" rx="18" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+                  <text x="200" y="645" text-anchor="middle" font-family="Cairo" font-size="14" font-weight="900" fill="#14532d">End</text>
+                </g>
+
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Live Interactive Simulator -->
+      <div class="bg-gradient-to-r from-pink-50 to-rose-50 p-6 md:p-10 rounded-3xl border-2 border-pink-300">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+          <span class="text-sm font-black text-pink-600 uppercase">المحاكي الصفي التفاعلي</span>
+          <h3 class="text-3xl font-black text-pink-900 mt-1">جربي الكود مع الطالبات وتأكدي من النتائج 💻</h3>
+          <p class="text-base text-pink-700 font-bold mt-2">غيري القيم المدخلة ولاحظي كيف يسلك مفسر بايثون مسارات مختلفة بناءً على الشروط المتداخلة!</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          
+          <!-- Inputs Form -->
+          <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-pink-200 space-y-5 shadow-sm">
+            <div>
+              <label class="block text-base font-black text-pink-800 mb-2">اسم المستخدم المدخل (user_name):</label>
+              <input type="text" id="sim-username" value="admin" class="w-full font-mono text-lg p-3 bg-pink-50/50 rounded-2xl border-2 border-pink-200 outline-none focus:ring-2 focus:ring-pink-400 font-bold text-slate-800">
+              <p class="text-xs text-slate-500 font-bold mt-1">القيمة الصحيحة: <span class="font-mono text-pink-700 font-black">admin</span></p>
+            </div>
+
+            <div>
+              <label class="block text-base font-black text-pink-800 mb-2">كلمة المرور المدخلة (user_password):</label>
+              <input type="text" id="sim-password" value="123@q8" class="w-full font-mono text-lg p-3 bg-pink-50/50 rounded-2xl border-2 border-pink-200 outline-none focus:ring-2 focus:ring-pink-400 font-bold text-slate-800">
+              <p class="text-xs text-slate-500 font-bold mt-1">كلمة المرور الصحيحة: <span class="font-mono text-pink-700 font-black">123@q8</span></p>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="pt-2 flex flex-wrap gap-2">
+              <button type="button" onclick="setSimValues('admin', '123@q8')" class="text-sm font-black px-3 py-2 bg-emerald-100 text-emerald-800 rounded-xl hover:bg-emerald-200 transition">الحالة 1: كلاهما صحيح</button>
+              <button type="button" onclick="setSimValues('admin', 'wrong_pass')" class="text-sm font-black px-3 py-2 bg-yellow-100 text-yellow-900 rounded-xl hover:bg-yellow-200 transition">الحالة 2: كلمة مرور خطأ</button>
+              <button type="button" onclick="setSimValues('unknown_user', '123@q8')" class="text-sm font-black px-3 py-2 bg-rose-100 text-rose-800 rounded-xl hover:bg-rose-200 transition">الحالة 3: مستخدم غير موجود</button>
+            </div>
+
+            <button id="run-sim-btn" class="w-full py-3.5 bg-pink-600 hover:bg-pink-700 text-white font-black rounded-2xl text-lg shadow-md transition">
+              تشغيل البرنامج (Run Code) 🚀
+            </button>
+          </div>
+
+          <!-- Execution Terminal Output (LTR) -->
+          <div class="bg-slate-900 rounded-3xl p-6 md:p-8 border-2 border-slate-700 text-white font-mono text-base md:text-lg min-h-[300px] flex flex-col justify-between shadow-xl">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <span class="text-sm text-slate-400 font-cairo font-bold">شاشة المخرجات (Python Terminal)</span>
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              </div>
+              <div id="terminal-lines" dir="ltr" class="text-left space-y-2 leading-relaxed text-slate-200">
+                <div class="text-slate-500">&gt;&gt;&gt; Ready to execute nested_if.py ...</div>
+              </div>
+            </div>
+            
+            <div id="sim-trace" class="mt-5 pt-3 border-t border-slate-800 text-base font-cairo text-pink-300 font-black">
+              المسار المنفذ: في انتظار التشغيل...
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: النشاط (Nested if Interactive Classroom Activity) -->
+    <section id="nested-activity-section" class="bg-white rounded-3xl p-6 md:p-10 border-2 border-pink-400 custom-shadow space-y-8">
+      <div class="border-b-2 border-pink-100 pb-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-4 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-base font-black rounded-full shadow-sm">
+            ⭐ نشاط
+          </span>
+          <h2 class="text-2xl md:text-3xl font-black text-pink-900 mt-2">نشاط: محطة الأمان والشرط المتداخل 🔐</h2>
+          <p class="text-base text-pink-700 font-bold mt-1">تتبعي الكود البرمجي التالي وتوقعي المخرجات الصحيحة بناءً على قيم المدخلات المعطاة:</p>
+        </div>
+        <div class="bg-pink-100 text-pink-800 font-black px-4 py-2 rounded-2xl text-sm border border-pink-200">
+          🎯 التحدي الصفي للـ Nested if
+        </div>
+      </div>
+
+      <!-- Code Snippet for the Activity (LTR) -->
+      <div dir="ltr" class="text-left bg-slate-900 rounded-3xl p-6 text-white font-mono text-base md:text-lg border-2 border-pink-300 leading-relaxed shadow-inner">
+        <div class="text-slate-400 text-xs font-cairo mb-2 text-left"># تتبعي تنفيذ الكود البرمجي التالي:</div>
+        <div><span class="text-sky-400">role</span> = <span class="text-emerald-300">'student'</span></div>
+        <div><span class="text-sky-400">device_pin</span> = <span class="text-yellow-300">2026</span></div>
+        <div class="text-pink-400 font-bold mt-2">if role == 'student':</div>
+        <div class="pl-8 text-purple-300 font-bold">if device_pin == 2026:</div>
+        <div class="pl-16 text-emerald-400">print('Lab Access Granted!')</div>
+        <div class="pl-8 text-purple-300 font-bold">else:</div>
+        <div class="pl-16 text-rose-400">print('Wrong PIN code.')</div>
+        <div class="text-pink-400 font-bold mt-2">else:</div>
+        <div class="pl-8 text-rose-400">print('Unknown Role.')</div>
+      </div>
+
+      <!-- Interactive Question Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Case 1 -->
+        <div class="bg-pink-50/70 p-5 rounded-2xl border-2 border-pink-200 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="text-sm font-black text-pink-600 mb-1">الحالة الأولى:</div>
+            <div class="text-base font-bold text-slate-800">إذا كانت المدخلات:<br><code dir="ltr" class="font-mono text-pink-700 bg-white px-2 py-0.5 rounded border border-pink-200 font-bold inline-block mt-1">role='student', pin=2026</code></div>
+            <p class="text-xs text-slate-600 font-bold mt-2">ما الرسالة المطبوعة في الشاشة؟</p>
+          </div>
+          <div class="space-y-2">
+            <button onclick="checkActivityAns(1, 'Lab Access Granted!')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              أ) Lab Access Granted!
+            </button>
+            <button onclick="checkActivityAns(1, 'Wrong PIN code.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ب) Wrong PIN code.
+            </button>
+            <button onclick="checkActivityAns(1, 'Unknown Role.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ج) Unknown Role.
+            </button>
+            <div id="act-res-1" class="text-xs font-black hidden p-2 rounded-lg mt-1"></div>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="bg-pink-50/70 p-5 rounded-2xl border-2 border-pink-200 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="text-sm font-black text-pink-600 mb-1">الحالة الثانية:</div>
+            <div class="text-base font-bold text-slate-800">إذا كانت المدخلات:<br><code dir="ltr" class="font-mono text-pink-700 bg-white px-2 py-0.5 rounded border border-pink-200 font-bold inline-block mt-1">role='student', pin=9999</code></div>
+            <p class="text-xs text-slate-600 font-bold mt-2">ما الرسالة المطبوعة في الشاشة؟</p>
+          </div>
+          <div class="space-y-2">
+            <button onclick="checkActivityAns(2, 'Lab Access Granted!')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              أ) Lab Access Granted!
+            </button>
+            <button onclick="checkActivityAns(2, 'Wrong PIN code.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ب) Wrong PIN code.
+            </button>
+            <button onclick="checkActivityAns(2, 'Unknown Role.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ج) Unknown Role.
+            </button>
+            <div id="act-res-2" class="text-xs font-black hidden p-2 rounded-lg mt-1"></div>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="bg-pink-50/70 p-5 rounded-2xl border-2 border-pink-200 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="text-sm font-black text-pink-600 mb-1">الحالة الثالثة:</div>
+            <div class="text-base font-bold text-slate-800">إذا كانت المدخلات:<br><code dir="ltr" class="font-mono text-pink-700 bg-white px-2 py-0.5 rounded border border-pink-200 font-bold inline-block mt-1">role='guest', pin=2026</code></div>
+            <p class="text-xs text-slate-600 font-bold mt-2">ما الرسالة المطبوعة في الشاشة؟</p>
+          </div>
+          <div class="space-y-2">
+            <button onclick="checkActivityAns(3, 'Lab Access Granted!')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              أ) Lab Access Granted!
+            </button>
+            <button onclick="checkActivityAns(3, 'Wrong PIN code.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ب) Wrong PIN code.
+            </button>
+            <button onclick="checkActivityAns(3, 'Unknown Role.')" class="w-full text-right text-xs font-black p-2.5 bg-white hover:bg-pink-100 rounded-xl border border-pink-200 transition">
+              ج) Unknown Role.
+            </button>
+            <div id="act-res-3" class="text-xs font-black hidden p-2 rounded-lg mt-1"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 7: Key Takeaway Cards -->
+    <section class="bg-pink-100/70 rounded-3xl p-8 border-2 border-pink-200">
+      <h3 class="text-2xl font-black text-pink-900 mb-4 flex items-center gap-3">
+        <span>📌 تذكري دائماً يا مبدعة:</span>
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-base md:text-lg font-bold text-slate-800">
+        <div class="flex items-start gap-3 bg-white p-4 rounded-2xl border border-pink-300">
+          <span class="text-pink-600 font-black text-xl">⭐</span>
+          <p>لا يتم اختبار <b>الشرط الداخلي المتداخل</b> إلا إذا تحقق <b>الشرط الخارجي</b> وكان ناتجه <span class="font-mono text-emerald-700 font-black">True</span>.</p>
+        </div>
+        <div class="flex items-start gap-3 bg-white p-4 rounded-2xl border border-pink-300">
+          <span class="text-pink-600 font-black text-xl">⭐</span>
+          <p>الدقة في <b>المسافات البادئة (Indentation)</b> هي الأساس لتحديد تبعية الكتل البرمجية داخل جمل الشروط في لغة بايثون.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* 1. AUTO DATE & DAY (حساب التاريخ واليوم تلقائياً) */
+    function updateDateAndDay() {
+      const now = new Date();
+      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      
+      const dayName = days[now.getDay()];
+      const dayNum = now.getDate();
+      const monthName = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      const dateElement = document.getElementById('current-day-date');
+      if (dateElement) {
+        dateElement.textContent = `يوم ${dayName}، ${dayNum} ${monthName} ${year} م`;
+      }
+    }
+
+    /* 2. ATTENDANCE & GIRLS CALCULATOR */
+    const totalInput = document.getElementById('total-students');
+    const presentInput = document.getElementById('present-students');
+    const absentDisplay = document.getElementById('absent-students');
+    const rateDisplay = document.getElementById('attendance-rate');
+
+    function calculateAttendance() {
+      const total = parseInt(totalInput.value) || 0;
+      let present = parseInt(presentInput.value) || 0;
+
+      if (present > total) {
+        present = total;
+        presentInput.value = total;
+      }
+      if (present < 0) {
+        present = 0;
+        presentInput.value = 0;
+      }
+
+      const absent = Math.max(0, total - present);
+      const rate = total > 0 ? Math.round((present / total) * 100) : 0;
+
+      absentDisplay.textContent = absent;
+      rateDisplay.textContent = rate + '%';
+    }
+
+    if (totalInput && presentInput) {
+      totalInput.addEventListener('input', calculateAttendance);
+      presentInput.addEventListener('input', calculateAttendance);
+    }
+
+    /* 3. WHEEL OF NAMES FOR GIRLS (عجلة الحظ التفاعلية) */
+    const defaultStudents = [
+      'سارة الكندري', 'فاطمة الدوسري', 'نورة العتيبي', 'ريم المطيري',
+      'دلال الشمري', 'مريم العازمي', 'شهد الهاجري', 'حصة الرشيدي',
+      'لولوة الفضلي', 'أفنان السبيعي', 'جود الخالدي', 'أسماء الحربي'
+    ];
+
+    let students = [...defaultStudents];
+    const canvas = document.getElementById('wheel-canvas');
+    const spinBtn = document.getElementById('spin-btn');
+    const studentsInput = document.getElementById('students-input');
+    const updateWheelBtn = document.getElementById('update-wheel-btn');
+    const resetNamesBtn = document.getElementById('reset-names-btn');
+    const winnerBanner = document.getElementById('winner-banner');
+    const winnerNameEl = document.getElementById('winner-name');
+
+    let startAngle = 0;
+    let isSpinning = false;
+    const wheelColors = [
+      '#f43f75', '#fb7198', '#fda4af', '#f472b6', 
+      '#e11d5f', '#f9a8d4', '#ec4899', '#be124e',
+      '#f687b3', '#ed64a6', '#db2777', '#f87171'
+    ];
+
+    function initStudentsText() {
+      if (studentsInput) {
+        studentsInput.value = students.join('\n');
+      }
+    }
+
+    function drawWheel() {
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const radius = width / 2;
+      const totalSlices = students.length;
+      if (totalSlices === 0) return;
+
+      const sliceAngle = (2 * Math.PI) / totalSlices;
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < totalSlices; i++) {
+        const angle = startAngle + i * sliceAngle;
+        ctx.beginPath();
+        ctx.fillStyle = wheelColors[i % wheelColors.length];
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius - 8, angle, angle + sliceAngle);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Draw Student Names
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 15px Cairo, sans-serif';
+        ctx.translate(radius, radius);
+        ctx.rotate(angle + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillText(students[i], radius - 25, 5);
+        ctx.restore();
+      }
+
+      // Outer rim
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius - 6, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#f43f75';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+    }
+
+    function spinWheel() {
+      if (isSpinning || students.length === 0) return;
+      isSpinning = true;
+      if (winnerBanner) winnerBanner.classList.add('hidden');
+
+      const spinRounds = 5 + Math.random() * 5;
+      const extraAngle = Math.random() * 2 * Math.PI;
+      const totalRotation = spinRounds * 2 * Math.PI + extraAngle;
+      
+      const duration = 4000;
+      const startTime = performance.now();
+      const initialStartAngle = startAngle;
+
+      function animate(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-out cubic
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+
+        startAngle = initialStartAngle + totalRotation * easeOut;
+        drawWheel();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          determineWinner();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function determineWinner() {
+      const sliceAngle = (2 * Math.PI) / students.length;
+      // Pointer is on the right (angle = 0)
+      const normalizedAngle = (2 * Math.PI - (startAngle % (2 * Math.PI))) % (2 * Math.PI);
+      const winnerIndex = Math.floor(normalizedAngle / sliceAngle) % students.length;
+      const luckyStudent = students[winnerIndex];
+
+      if (winnerNameEl) winnerNameEl.textContent = `${luckyStudent} 🎉`;
+      if (winnerBanner) winnerBanner.classList.remove('hidden');
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    if (spinBtn) spinBtn.addEventListener('click', spinWheel);
+
+    if (updateWheelBtn) {
+      updateWheelBtn.addEventListener('click', () => {
+        const raw = studentsInput.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        if (raw.length > 0) {
+          students = raw;
+          drawWheel();
+        }
+      });
+    }
+
+    if (resetNamesBtn) {
+      resetNamesBtn.addEventListener('click', () => {
+        students = [...defaultStudents];
+        initStudentsText();
+        drawWheel();
+      });
+    }
+
+    /* 4. WARMUP ACTIVITY: INTERACTIVE CODE BLANKS */
+    const checkBlanksBtn = document.getElementById('check-blanks-btn');
+    const showBlanksHintBtn = document.getElementById('show-blanks-hint-btn');
+    const autoFillBtn = document.getElementById('auto-fill-btn');
+    const blanksResult = document.getElementById('blanks-result');
+
+    function checkWarmupBlanks() {
+      const b1 = (document.getElementById('blank1').value || '').trim().toLowerCase();
+      const b2 = (document.getElementById('blank2').value || '').trim().toLowerCase();
+      const b3 = (document.getElementById('blank3').value || '').trim();
+      const b4 = (document.getElementById('blank4').value || '').trim().toLowerCase();
+
+      // Tolerant checks
+      const isB1Ok = (b1 === 'int' || b1 === 'float');
+      const isB2Ok = (b2 === 'if');
+      const isB3Ok = (b3 === '>' || b3 === '>=');
+      const isB4Ok = (b4 === 'else');
+
+      if (!blanksResult) return;
+      blanksResult.classList.remove('hidden');
+
+      if (isB1Ok && isB2Ok && isB3Ok && isB4Ok) {
+        blanksResult.className = 'mt-5 p-5 rounded-2xl text-lg font-black leading-relaxed bg-emerald-100 text-emerald-900 border-2 border-emerald-300';
+        blanksResult.innerHTML = `🎉 أحسنتِ صنعاً يا مبدعة! إجابتكِ صحيحة 100%.<br><span class="text-sm font-bold">تم تحويل القيمة لدالة أرقام int() واستخدام if num > 0 ثم else. جاهزات الآن للشرط المتداخل!</span>`;
+        if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 60 });
+      } else {
+        blanksResult.className = 'mt-5 p-5 rounded-2xl text-lg font-black leading-relaxed bg-rose-100 text-rose-900 border-2 border-rose-300';
+        blanksResult.innerHTML = `⚠️ هناك بعض الفراغات تحتاج لمراجعة:<br>
+          • الفراغ 1 (دالة تحويل العدد الصحيح): ${isB1Ok ? '✅' : '❌'}<br>
+          • الفراغ 2 (أداة الشرط الأولى): ${isB2Ok ? '✅' : '❌'}<br>
+          • الفراغ 3 (معامل المقارنة أكبر من): ${isB3Ok ? '✅' : '❌'}<br>
+          • الفراغ 4 (الاحتمال المعاكس): ${isB4Ok ? '✅' : '❌'}`;
+      }
+    }
+
+    if (checkBlanksBtn) checkBlanksBtn.addEventListener('click', checkWarmupBlanks);
+
+    if (showBlanksHintBtn) {
+      showBlanksHintBtn.addEventListener('click', () => {
+        if (!blanksResult) return;
+        blanksResult.classList.remove('hidden');
+        blanksResult.className = 'mt-5 p-4 rounded-2xl text-base font-bold bg-amber-100 text-amber-900 border-2 border-amber-300';
+        blanksResult.innerHTML = `💡 <b>تلميح للمساعدة:</b><br>
+        1. لتحويل المدخل إلى عدد صحيح نستخدم دالة <code class="font-mono bg-white px-1 rounded">int</code>.<br>
+        2. نبدأ جملة الشرط بكلمة <code class="font-mono bg-white px-1 rounded">if</code>.<br>
+        3. رمز أكبر من هو <code class="font-mono bg-white px-1 rounded">&gt;</code>.<br>
+        4. في حال عدم تحقق الشرط ننتقل إلى <code class="font-mono bg-white px-1 rounded">else</code>.`;
+      });
+    }
+
+    if (autoFillBtn) {
+      autoFillBtn.addEventListener('click', () => {
+        document.getElementById('blank1').value = 'int';
+        document.getElementById('blank2').value = 'if';
+        document.getElementById('blank3').value = '>';
+        document.getElementById('blank4').value = 'else';
+        checkWarmupBlanks();
+      });
+    }
+
+    /* 5. NESTED IF SIMULATOR RUNNER */
+    const runSimBtn = document.getElementById('run-sim-btn');
+    const simUsernameInput = document.getElementById('sim-username');
+    const simPasswordInput = document.getElementById('sim-password');
+    const terminalLines = document.getElementById('terminal-lines');
+    const simTrace = document.getElementById('sim-trace');
+
+    function setSimValues(user, pass) {
+      if (simUsernameInput) simUsernameInput.value = user;
+      if (simPasswordInput) simPasswordInput.value = pass;
+      runSimulation();
+    }
+
+    function runSimulation() {
+      const u = (simUsernameInput.value || '').trim();
+      const p = (simPasswordInput.value || '').trim();
+
+      if (!terminalLines) return;
+      terminalLines.innerHTML = '';
+
+      const l1 = document.createElement('div');
+      l1.className = 'text-slate-400';
+      l1.textContent = `>>> python nested_login.py`;
+      terminalLines.appendChild(l1);
+
+      const l2 = document.createElement('div');
+      l2.textContent = `Enter user name: ${u}`;
+      terminalLines.appendChild(l2);
+
+      const l3 = document.createElement('div');
+      l3.textContent = `Enter password: ${p}`;
+      terminalLines.appendChild(l3);
+
+      setTimeout(() => {
+        const out = document.createElement('div');
+        out.className = 'mt-2 p-2 rounded-lg font-black text-lg ';
+
+        // Outer Condition: user_name == 'admin'
+        if (u === 'admin') {
+          // Inner Condition: user_password == '123@q8'
+          if (p === '123@q8') {
+            out.className += 'text-emerald-400 bg-emerald-950/40 border border-emerald-500/40';
+            out.textContent = `Login successful. Welcome admin!`;
+            simTrace.textContent = `المسار المنفذ: ✅ تحقق الشرط الخارجي (admin) ➔ ثم تحقق الشرط المتداخل الداخلي (123@q8) ➔ نجاح تسجيل الدخول.`;
+            if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 60 });
+          } else {
+            out.className += 'text-yellow-300 bg-yellow-950/40 border border-yellow-500/40';
+            out.textContent = `Incorrect password.`;
+            simTrace.textContent = `المسار المنفذ: ⚠️ تحقق الشرط الخارجي (admin) ➔ ولكن فشل الشرط المتداخل الداخلي لخطأ في كلمة المرور.`;
+          }
+        } else {
+          out.className += 'text-rose-400 bg-rose-950/40 border border-rose-500/40';
+          out.textContent = `User name not found.`;
+          simTrace.textContent = `المسار المنفذ: ❌ لم يتحقق الشرط الخارجي أساساً (اسم المستخدم غير مسجل) ➔ تم تخطي الشرط المتداخل تماماً والذهاب مباشرة لـ else الخارجية!`;
+        }
+
+        terminalLines.appendChild(out);
+      }, 250);
+    }
+
+    if (runSimBtn) runSimBtn.addEventListener('click', runSimulation);
+
+    /* 6. NESTED IF ACTIVITY CHECKER (نشاط) */
+    function checkActivityAns(caseNum, selectedAns) {
+      const resEl = document.getElementById(`act-res-${caseNum}`);
+      if (!resEl) return;
+      resEl.classList.remove('hidden');
+
+      const correctAnswers = {
+        1: 'Lab Access Granted!',
+        2: 'Wrong PIN code.',
+        3: 'Unknown Role.'
+      };
+
+      if (selectedAns === correctAnswers[caseNum]) {
+        resEl.className = 'text-xs font-black p-2 rounded-lg mt-1 bg-emerald-100 text-emerald-900 border border-emerald-300';
+        resEl.innerHTML = `✅ إجابة صحيحة! أحسنتِ يا مبدعة 🎉`;
+        if (typeof confetti === 'function') confetti({ particleCount: 50, spread: 50 });
+      } else {
+        resEl.className = 'text-xs font-black p-2 rounded-lg mt-1 bg-rose-100 text-rose-900 border border-rose-300';
+        resEl.innerHTML = `❌ إجابة غير صحيحة، فكري بالمسار البرمجي وحاولي ثانية!`;
+      }
+    }
+
+    // Initial setups on load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDateAndDay();
+      calculateAttendance();
+      initStudentsText();
+      drawWheel();
+    });
+  </script>
+</body>
+</html>
